@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyTrack - Manajemen Keuangan Pribadi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset dan Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary-green: #10B981;
+            --dark-green: #059669;
+            --light-green: #D1FAE5;
+            --primary-red: #EF4444;
+            --dark-red: #DC2626;
+            --light-red: #FEE2E2;
+            --primary-blue: #3B82F6;
+            --dark-blue: #2563EB;
+            --light-blue: #DBEAFE;
+            --primary-purple: #8B5CF6;
+            --dark-purple: #7C3AED;
+            --light-purple: #EDE9FE;
+            --primary-yellow: #F59E0B;
+            --dark-yellow: #D97706;
+            --light-yellow: #FEF3C7;
+            --dark-gray: #1F2937;
+            --medium-gray: #4B5563;
+            --light-gray: #9CA3AF;
+            --bg-gray: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark-gray);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* Header dan Navigasi */
+        header {
+            background: linear-gradient(90deg, var(--dark-gray) 0%, #374151 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: var(--primary-green);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary-green), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: var(--primary-green);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Dashboard Overview */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            color: var(--medium-gray);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-value.savings {
+            color: var(--primary-green);
+        }
+
+        .card-value.debt {
+            color: var(--primary-red);
+        }
+
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+        }
+
+        .progress-container {
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #E5E7EB;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.savings {
+            background: linear-gradient(90deg, var(--primary-green), var(--dark-green));
+        }
+
+        .progress-fill.debt {
+            background: linear-gradient(90deg, var(--primary-red), var(--dark-red));
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Konten Utama */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.8rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .section-title.savings {
+            color: var(--primary-green);
+        }
+
+        .section-title.debt {
+            color: var(--primary-red);
+        }
+
+        .section-badge {
+            background: var(--light-green);
+            color: var(--dark-green);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .section-badge.debt {
+            background: var(--light-red);
+            color: var(--dark-red);
+        }
+
+        /* Form Input */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--medium-gray);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-gray);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #E5E7EB;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .form-input.debt:focus {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-green), var(--dark-green));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, var(--primary-red), var(--dark-red));
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Daftar Tabungan */
+        .savings-list, .debt-list {
+            margin-top: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .savings-list::-webkit-scrollbar, .debt-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .savings-list::-webkit-scrollbar-track, .debt-list::-webkit-scrollbar-track {
+            background: #F1F1F1;
+            border-radius: 10px;
+        }
+
+        .savings-list::-webkit-scrollbar-thumb, .debt-list::-webkit-scrollbar-thumb {
+            background: #C1C1C1;
+            border-radius: 10px;
+        }
+
+        .savings-item, .debt-item {
+            background: var(--bg-gray);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .savings-item:hover, .debt-item:hover {
+            transform: translateX(5px);
+        }
+
+        .savings-info, .debt-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .savings-date, .debt-friend {
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .savings-amount {
+            color: var(--primary-green);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .debt-amount {
+            color: var(--primary-red);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .debt-status {
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: var(--light-yellow);
+            color: var(--dark-yellow);
+        }
+
+        .status-paid {
+            background: var(--light-green);
+            color: var(--dark-green);
+        }
+
+        .debt-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .action-pay {
+            background: var(--light-green);
+            color: var(--dark-green);
+        }
+
+        .action-delete {
+            background: var(--light-red);
+            color: var(--dark-red);
+        }
+
+        /* Estimasi Tabungan */
+        .estimation-card {
+            background: linear-gradient(135deg, var(--light-blue), #E0F2FE);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .estimation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .estimation-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+        }
+
+        .estimation-detail {
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+            padding: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 500px;
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--light-gray);
+        }
+
+        /* Responsif */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-container {
+                padding: 1rem;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background: var(--bg-gray);
+            border-radius: var(--radius-sm);
+            padding: 5px;
+            width: fit-content;
+        }
+
+        .toggle-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Chart Placeholder */
+        .chart-container {
+            height: 200px;
+            background: var(--bg-gray);
+            border-radius: var(--radius-sm);
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-gray);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-bar {
+            width: 30px;
+            background: linear-gradient(to top, var(--primary-green), var(--dark-green));
+            border-radius: 4px 4px 0 0;
+            margin: 0 5px;
+            position: relative;
+            animation: chartGrow 1.5s ease-out;
+        }
+
+        @keyframes chartGrow {
+            from { height: 0; }
+            to { height: var(--h); }
+        }
+
+        .chart-bar.debt {
+            background: linear-gradient(to top, var(--primary-red), var(--dark-red));
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="logo-text">MoneyTrack</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" id="showAll">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </button>
+                <button class="nav-btn" id="showSavings">
+                    <i class="fas fa-piggy-bank"></i> Tabungan
+                </button>
+                <button class="nav-btn" id="showDebts">
+                    <i class="fas fa-hand-holding-usd"></i> Utang
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Dashboard Overview -->
+        <div class="dashboard fade-in" id="dashboardOverview">
+            <div class="dashboard-card">
+                <div class="card-title">
+                    <i class="fas fa-bullseye"></i> Target Tabungan
+                </div>
+                <div class="card-value savings" id="savingsTarget">Rp 0</div>
+                <div class="card-subtitle">Total target yang ingin dicapai</div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-title">
+                    <i class="fas fa-chart-line"></i> Tabungan Terkumpul
+                </div>
+                <div class="card-value savings" id="savingsCurrent">Rp 0</div>
+                <div class="card-subtitle">Dari target <span id="savingsPercent">0%</span></div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill savings" id="savingsProgress" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>Rp 0</span>
+                        <span id="savingsRemaining">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-title">
+                    <i class="fas fa-file-invoice-dollar"></i> Total Utang
+                </div>
+                <div class="card-value debt" id="totalDebt">Rp 0</div>
+                <div class="card-subtitle">Jumlah utang yang belum lunas</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill debt" id="debtProgress" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>Lunas: <span id="debtPaidCount">0</span></span>
+                        <span>Belum: <span id="debtPendingCount">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Sections -->
+        <div class="content">
+            <!-- Tabungan Section -->
+            <div class="section fade-in" id="savingsSection">
+                <div class="section-header">
+                    <div class="section-title savings">
+                        <i class="fas fa-piggy-bank"></i> Tabungan Saya
+                    </div>
+                    <div class="section-badge" id="savingsDaysLeft">- hari lagi</div>
+                </div>
+                
+                <div class="toggle-container">
+                    <button class="toggle-btn active" id="savingsToggleForm">Tambah Tabungan</button>
+                    <button class="toggle-btn" id="savingsToggleHistory">Riwayat</button>
+                </div>
+                
+                <!-- Form Tabungan -->
+                <div id="savingsForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Target Tabungan</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-bullseye"></i>
+                                <input type="number" class="form-input" id="savingsGoal" placeholder="Contoh: 5000000">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tabungan Harian</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-coins"></i>
+                                <input type="number" class="form-input" id="dailySavings" placeholder="Contoh: 50000">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tambahkan Tabungan Hari Ini</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-plus-circle"></i>
+                            <input type="number" class="form-input" id="addSavings" placeholder="Jumlah yang ingin ditambahkan">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-full" id="addSavingsBtn">
+                        <i class="fas fa-plus"></i> Tambahkan Tabungan
+                    </button>
+                    
+                    <!-- Estimasi Tabungan -->
+                    <div class="estimation-card">
+                        <div class="estimation-title">
+                            <i class="fas fa-calendar-alt"></i> Estimasi Pencapaian Target
+                        </div>
+                        <div class="estimation-value" id="estimationDays">-</div>
+                        <div class="estimation-detail" id="estimationDetail">
+                            Atur target dan tabungan harian untuk melihat estimasi
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Riwayat Tabungan -->
+                <div id="savingsHistory" style="display: none;">
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <div class="chart-bars" id="savingsChart"></div>
+                            <div>Grafik Perkembangan Tabungan</div>
+                        </div>
+                    </div>
+                    
+                    <div class="savings-list" id="savingsList">
+                        <!-- Riwayat tabungan akan ditampilkan di sini -->
+                        <div style="text-align: center; padding: 2rem; color: var(--light-gray);">
+                            <i class="fas fa-history fa-2x" style="margin-bottom: 10px;"></i>
+                            <div>Belum ada riwayat tabungan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Utang Section -->
+            <div class="section fade-in" id="debtSection">
+                <div class="section-header">
+                    <div class="section-title debt">
+                        <i class="fas fa-file-invoice-dollar"></i> Utang Teman
+                    </div>
+                    <div class="section-badge debt" id="totalDebtBadge">Rp 0</div>
+                </div>
+                
+                <div class="toggle-container">
+                    <button class="toggle-btn active" id="debtToggleForm">Tambah Utang</button>
+                    <button class="toggle-btn" id="debtToggleList">Daftar Utang</button>
+                </div>
+                
+                <!-- Form Utang -->
+                <div id="debtForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nama Teman</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user-friends"></i>
+                                <input type="text" class="form-input debt" id="debtFriend" placeholder="Nama teman">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Jumlah Utang</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <input type="number" class="form-input debt" id="debtAmount" placeholder="Jumlah utang">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Keterangan (Opsional)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-sticky-note"></i>
+                            <input type="text" class="form-input debt" id="debtNote" placeholder="Catatan utang">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-secondary btn-full" id="addDebtBtn">
+                        <i class="fas fa-plus"></i> Tambahkan Utang
+                    </button>
+                    
+                    <!-- Statistik Utang -->
+                    <div class="estimation-card" style="background: linear-gradient(135deg, var(--light-purple), #F5F3FF); border-left-color: var(--primary-purple);">
+                        <div class="estimation-title" style="color: var(--dark-purple);">
+                            <i class="fas fa-chart-pie"></i> Statistik Utang
+                        </div>
+                        <div class="estimation-value" style="color: var(--dark-purple);" id="debtStats">Rp 0</div>
+                        <div class="estimation-detail">
+                            <span id="debtPendingStats">0 utang</span> belum lunas • 
+                            <span id="debtPaidStats">0 utang</span> sudah lunas
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Daftar Utang -->
+                <div id="debtList" style="display: none;">
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <div class="chart-bars" id="debtChart"></div>
+                            <div>Grafik Distribusi Utang</div>
+                        </div>
+                    </div>
+                    
+                    <div class="debt-list" id="debtItems">
+                        <!-- Daftar utang akan ditampilkan di sini -->
+                        <div style="text-align: center; padding: 2rem; color: var(--light-gray);">
+                            <i class="fas fa-users fa-2x" style="margin-bottom: 10px;"></i>
+                            <div>Belum ada catatan utang</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Bayar Utang -->
+    <div class="modal" id="payDebtModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Bayar Utang</div>
+                <button class="modal-close" id="closePayModal">&times;</button>
+            </div>
+            <div id="payDebtForm">
+                <!-- Form bayar utang akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>MoneyTrack &copy; 2023 - Kelola tabungan dan utang dengan mudah</p>
+        <p>Data disimpan secara lokal di perangkat Anda</p>
+    </footer>
+
+    <script>
+        // Data aplikasi
+        let savingsData = {
+            goal: 0,
+            daily: 0,
+            current: 0,
+            history: []
+        };
+        
+        let debtsData = [];
+        
+        // Elemen DOM
+        const savingsSection = document.getElementById('savingsSection');
+        const debtSection = document.getElementById('debtSection');
+        const dashboardOverview = document.getElementById('dashboardOverview');
+        
+        const savingsGoalInput = document.getElementById('savingsGoal');
+        const dailySavingsInput = document.getElementById('dailySavings');
+        const addSavingsInput = document.getElementById('addSavings');
+        const addSavingsBtn = document.getElementById('addSavingsBtn');
+        
+        const debtFriendInput = document.getElementById('debtFriend');
+        const debtAmountInput = document.getElementById('debtAmount');
+        const debtNoteInput = document.getElementById('debtNote');
+        const addDebtBtn = document.getElementById('addDebtBtn');
+        
+        const savingsTargetEl = document.getElementById('savingsTarget');
+        const savingsCurrentEl = document.getElementById('savingsCurrent');
+        const savingsPercentEl = document.getElementById('savingsPercent');
+        const savingsProgressEl = document.getElementById('savingsProgress');
+        const savingsRemainingEl = document.getElementById('savingsRemaining');
+        const savingsDaysLeftEl = document.getElementById('savingsDaysLeft');
+        
+        const totalDebtEl = document.getElementById('totalDebt');
+        const debtPaidCountEl = document.getElementById('debtPaidCount');
+        const debtPendingCountEl = document.getElementById('debtPendingCount');
+        const debtProgressEl = document.getElementById('debtProgress');
+        const totalDebtBadgeEl = document.getElementById('totalDebtBadge');
+        
+        const estimationDaysEl = document.getElementById('estimationDays');
+        const estimationDetailEl = document.getElementById('estimationDetail');
+        
+        const debtStatsEl = document.getElementById('debtStats');
+        const debtPendingStatsEl = document.getElementById('debtPendingStats');
+        const debtPaidStatsEl = document.getElementById('debtPaidStats');
+        
+        const savingsListEl = document.getElementById('savingsList');
+        const debtItemsEl = document.getElementById('debtItems');
+        
+        const savingsChartEl = document.getElementById('savingsChart');
+        const debtChartEl = document.getElementById('debtChart');
+        
+        const payDebtModal = document.getElementById('payDebtModal');
+        const payDebtFormEl = document.getElementById('payDebtForm');
+        const closePayModalBtn = document.getElementById('closePayModal');
+        
+        // Tombol navigasi
+        document.getElementById('showAll').addEventListener('click', () => showSection('all'));
+        document.getElementById('showSavings').addEventListener('click', () => showSection('savings'));
+        document.getElementById('showDebts').addEventListener('click', () => showSection('debts'));
+        
+        // Toggle tabungan
+        document.getElementById('savingsToggleForm').addEventListener('click', () => toggleSavingsView('form'));
+        document.getElementById('savingsToggleHistory').addEventListener('click', () => toggleSavingsView('history'));
+        
+        // Toggle utang
+        document.getElementById('debtToggleForm').addEventListener('click', () => toggleDebtView('form'));
+        document.getElementById('debtToggleList').addEventListener('click', () => toggleDebtView('list'));
+        
+        // Fungsi untuk menampilkan section tertentu
+        function showSection(section) {
+            // Reset semua tombol navigasi
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Tampilkan section yang dipilih
+            if (section === 'all') {
+                document.getElementById('showAll').classList.add('active');
+                savingsSection.style.display = 'block';
+                debtSection.style.display = 'block';
+                dashboardOverview.style.display = 'grid';
+            } else if (section === 'savings') {
+                document.getElementById('showSavings').classList.add('active');
+                savingsSection.style.display = 'block';
+                debtSection.style.display = 'none';
+                dashboardOverview.style.display = 'none';
+            } else if (section === 'debts') {
+                document.getElementById('showDebts').classList.add('active');
+                savingsSection.style.display = 'none';
+                debtSection.style.display = 'block';
+                dashboardOverview.style.display = 'none';
+            }
+        }
+        
+        // Fungsi untuk toggle view tabungan
+        function toggleSavingsView(view) {
+            const formBtn = document.getElementById('savingsToggleForm');
+            const historyBtn = document.getElementById('savingsToggleHistory');
+            const form = document.getElementById('savingsForm');
+            const history = document.getElementById('savingsHistory');
+            
+            if (view === 'form') {
+                formBtn.classList.add('active');
+                historyBtn.classList.remove('active');
+                form.style.display = 'block';
+                history.style.display = 'none';
+            } else {
+                formBtn.classList.remove('active');
+                historyBtn.classList.add('active');
+                form.style.display = 'none';
+                history.style.display = 'block';
+                renderSavingsHistory();
+                renderSavingsChart();
+            }
+        }
+        
+        // Fungsi untuk toggle view utang
+        function toggleDebtView(view) {
+            const formBtn = document.getElementById('debtToggleForm');
+            const listBtn = document.getElementById('debtToggleList');
+            const form = document.getElementById('debtForm');
+            const list = document.getElementById('debtList');
+            
+            if (view === 'form') {
+                formBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                form.style.display = 'block';
+                list.style.display = 'none';
+            } else {
+                formBtn.classList.remove('active');
+                listBtn.classList.add('active');
+                form.style.display = 'none';
+                list.style.display = 'block';
+                renderDebtList();
+                renderDebtChart();
+            }
+        }
+        
+        // Format mata uang Rupiah
+        function formatRupiah(amount) {
+            return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+        
+        // Hitung persentase tabungan
+        function calculateSavingsPercentage() {
+            if (savingsData.goal === 0) return 0;
+            return Math.min(100, Math.round((savingsData.current / savingsData.goal) * 100));
+        }
+        
+        // Hitung estimasi hari untuk mencapai target
+        function calculateEstimationDays() {
+            if (savingsData.daily === 0 || savingsData.current >= savingsData.goal) return 0;
+            return Math.ceil((savingsData.goal - savingsData.current) / savingsData.daily);
+        }
+        
+        // Update tampilan tabungan
+        function updateSavingsDisplay() {
+            const percentage = calculateSavingsPercentage();
+            const remaining = savingsData.goal - savingsData.current;
+            const daysLeft = calculateEstimationDays();
+            
+            savingsTargetEl.textContent = formatRupiah(savingsData.goal);
+            savingsCurrentEl.textContent = formatRupiah(savingsData.current);
+            savingsPercentEl.textContent = `${percentage}%`;
+            savingsProgressEl.style.width = `${percentage}%`;
+            savingsRemainingEl.textContent = formatRupiah(Math.max(0, remaining));
+            
+            if (savingsData.goal > 0) {
+                savingsDaysLeftEl.textContent = `${daysLeft} hari lagi`;
+                estimationDaysEl.textContent = `${daysLeft} hari`;
+                estimationDetailEl.textContent = `Dengan menabung ${formatRupiah(savingsData.daily)} per hari, target akan tercapai dalam ${daysLeft} hari`;
+            } else {
+                savingsDaysLeftEl.textContent = '- hari lagi';
+                estimationDaysEl.textContent = '-';
+                estimationDetailEl.textContent = 'Atur target dan tabungan harian untuk melihat estimasi';
+            }
+            
+            // Update input fields jika data sudah ada
+            if (savingsData.goal > 0) {
+                savingsGoalInput.value = savingsData.goal;
+            }
+            if (savingsData.daily > 0) {
+                dailySavingsInput.value = savingsData.daily;
+            }
+        }
+        
+        // Update tampilan utang
+        function updateDebtsDisplay() {
+            let totalDebt = 0;
+            let paidCount = 0;
+            let pendingCount = 0;
+            
+            debtsData.forEach(debt => {
+                if (debt.status === 'pending') {
+                    totalDebt += debt.remaining;
+                    pendingCount++;
+                } else {
+                    paidCount++;
+                }
+            });
+            
+            totalDebtEl.textContent = formatRupiah(totalDebt);
+            totalDebtBadgeEl.textContent = formatRupiah(totalDebt);
+            debtPaidCountEl.textContent = paidCount;
+            debtPendingCountEl.textContent = pendingCount;
+            
+            // Hitung persentase utang yang sudah lunas
+            const totalDebtAmount = debtsData.reduce((sum, debt) => sum + debt.amount, 0);
+            const totalPaidAmount = debtsData.reduce((sum, debt) => sum + (debt.amount - debt.remaining), 0);
+            const debtPercentage = totalDebtAmount > 0 ? Math.round((totalPaidAmount / totalDebtAmount) * 100) : 0;
+            
+            debtProgressEl.style.width = `${debtPercentage}%`;
+            
+            // Update statistik utang
+            debtStatsEl.textContent = formatRupiah(totalDebt);
+            debtPendingStatsEl.textContent = `${pendingCount} utang`;
+            debtPaidStatsEl.textContent = `${paidCount} utang`;
+        }
+        
+        // Tambah tabungan
+        addSavingsBtn.addEventListener('click', function() {
+            const goal = parseInt(savingsGoalInput.value) || 0;
+            const daily = parseInt(dailySavingsInput.value) || 0;
+            const addAmount = parseInt(addSavingsInput.value) || 0;
+            
+            // Validasi input
+            if (goal < 0 || daily < 0 || addAmount < 0) {
+                alert('Jumlah tidak boleh negatif!');
+                return;
+            }
+            
+            // Simpan data tabungan
+            savingsData.goal = goal;
+            savingsData.daily = daily;
+            
+            // Tambahkan tabungan jika ada jumlah yang dimasukkan
+            if (addAmount > 0) {
+                savingsData.current += addAmount;
+                
+                // Tambahkan ke riwayat
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                
+                savingsData.history.push({
+                    date: dateStr,
+                    amount: addAmount,
+                    timestamp: today.getTime()
+                });
+                
+                // Reset input tambahan
+                addSavingsInput.value = '';
+            }
+            
+            // Simpan ke localStorage dan update tampilan
+            saveData();
+            updateSavingsDisplay();
+            
+            // Tampilkan notifikasi sukses
+            if (addAmount > 0) {
+                showNotification(`Berhasil menambahkan ${formatRupiah(addAmount)} ke tabungan!`, 'success');
+            } else {
+                showNotification('Data tabungan berhasil diperbarui!', 'success');
+            }
+        });
+        
+        // Tambah utang
+        addDebtBtn.addEventListener('click', function() {
+            const friend = debtFriendInput.value.trim();
+            const amount = parseInt(debtAmountInput.value) || 0;
+            const note = debtNoteInput.value.trim();
+            
+            // Validasi input
+            if (!friend) {
+                alert('Nama teman harus diisi!');
+                return;
+            }
+            
+            if (amount <= 0) {
+                alert('Jumlah utang harus lebih dari 0!');
+                return;
+            }
+            
+            // Tambahkan utang baru
+            const newDebt = {
+                id: Date.now(),
+                friend: friend,
+                amount: amount,
+                remaining: amount,
+                note: note || '-',
+                status: 'pending',
+                date: new Date().toLocaleDateString('id-ID'),
+                payments: []
+            };
+            
+            debtsData.push(newDebt);
+            
+            // Reset form
+            debtFriendInput.value = '';
+            debtAmountInput.value = '';
+            debtNoteInput.value = '';
+            
+            // Simpan ke localStorage dan update tampilan
+            saveData();
+            updateDebtsDisplay();
+            renderDebtList();
+            
+            // Tampilkan notifikasi
+            showNotification(`Utang kepada ${friend} sebesar ${formatRupiah(amount)} berhasil ditambahkan!`, 'success');
+        });
+        
+        // Render riwayat tabungan
+        function renderSavingsHistory() {
+            if (savingsData.history.length === 0) {
+                savingsListEl.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--light-gray);">
+                        <i class="fas fa-history fa-2x" style="margin-bottom: 10px;"></i>
+                        <div>Belum ada riwayat tabungan</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Urutkan berdasarkan tanggal terbaru
+            const sortedHistory = [...savingsData.history].sort((a, b) => b.timestamp - a.timestamp);
+            
+            let html = '';
+            sortedHistory.forEach(item => {
+                html += `
+                    <div class="savings-item">
+                        <div class="savings-info">
+                            <div class="savings-date">${item.date}</div>
+                            <div class="card-subtitle">Tabungan harian</div>
+                        </div>
+                        <div class="savings-amount">+ ${formatRupiah(item.amount)}</div>
+                    </div>
+                `;
+            });
+            
+            savingsListEl.innerHTML = html;
+        }
+        
+        // Render daftar utang
+        function renderDebtList() {
+            if (debtsData.length === 0) {
+                debtItemsEl.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--light-gray);">
+                        <i class="fas fa-users fa-2x" style="margin-bottom: 10px;"></i>
+                        <div>Belum ada catatan utang</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Urutkan: utang pending dulu, kemudian yang sudah lunas
+            const sortedDebts = [...debtsData].sort((a, b) => {
+                if (a.status === 'pending' && b.status === 'paid') return -1;
+                if (a.status === 'paid' && b.status === 'pending') return 1;
+                return b.id - a.id; // Terbaru dulu
+            });
+            
+            let html = '';
+            sortedDebts.forEach(debt => {
+                const statusClass = debt.status === 'pending' ? 'status-pending' : 'status-paid';
+                const statusText = debt.status === 'pending' ? 'Belum Lunas' : 'Lunas';
+                
+                html += `
+                    <div class="debt-item">
+                        <div class="debt-info">
+                            <div class="debt-friend">${debt.friend}</div>
+                            <div class="card-subtitle">${debt.note} • ${debt.date}</div>
+                        </div>
+                        <div>
+                            <div class="debt-amount">${formatRupiah(debt.remaining)}</div>
+                            <div class="debt-status ${statusClass}">${statusText}</div>
+                        </div>
+                        <div class="debt-actions">
+                            ${debt.status === 'pending' ? 
+                                `<button class="action-btn action-pay" onclick="showPayDebtModal(${debt.id})">
+                                    <i class="fas fa-money-check-alt"></i>
+                                </button>` : ''
+                            }
+                            <button class="action-btn action-delete" onclick="deleteDebt(${debt.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            debtItemsEl.innerHTML = html;
+        }
+        
+        // Tampilkan modal bayar utang
+        function showPayDebtModal(debtId) {
+            const debt = debtsData.find(d => d.id === debtId);
+            if (!debt) return;
+            
+            payDebtFormEl.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Bayar utang kepada ${debt.friend}</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <input type="number" class="form-input" id="payAmount" 
+                               placeholder="Jumlah yang dibayar" max="${debt.remaining}" 
+                               value="${debt.remaining}">
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--medium-gray); margin-top: 5px;">
+                        Sisa utang: ${formatRupiah(debt.remaining)}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Catatan Pembayaran (Opsional)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-sticky-note"></i>
+                        <input type="text" class="form-input" id="payNote" placeholder="Catatan pembayaran">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary btn-full" id="confirmPayBtn">
+                    <i class="fas fa-check-circle"></i> Konfirmasi Pembayaran
+                </button>
+            `;
+            
+            // Event listener untuk tombol konfirmasi
+            document.getElementById('confirmPayBtn').addEventListener('click', function() {
+                const payAmount = parseInt(document.getElementById('payAmount').value) || 0;
+                const payNote = document.getElementById('payNote').value.trim();
+                
+                if (payAmount <= 0) {
+                    alert('Jumlah pembayaran harus lebih dari 0!');
+                    return;
+                }
+                
+                if (payAmount > debt.remaining) {
+                    alert('Jumlah pembayaran tidak boleh lebih dari sisa utang!');
+                    return;
+                }
+                
+                // Kurangi sisa utang
+                debt.remaining -= payAmount;
+                
+                // Tambahkan catatan pembayaran
+                debt.payments.push({
+                    amount: payAmount,
+                    note: payNote || '-',
+                    date: new Date().toLocaleDateString('id-ID')
+                });
+                
+                // Update status jika sudah lunas
+                if (debt.remaining === 0) {
+                    debt.status = 'paid';
+                }
+                
+                // Simpan dan update tampilan
+                saveData();
+                updateDebtsDisplay();
+                renderDebtList();
+                
+                // Tutup modal
+                payDebtModal.style.display = 'none';
+                
+                // Tampilkan notifikasi
+                showNotification(`Berhasil membayar ${formatRupiah(payAmount)} kepada ${debt.friend}!`, 'success');
+            });
+            
+            // Tampilkan modal
+            payDebtModal.style.display = 'flex';
+        }
+        
+        // Hapus utang
+        function deleteDebt(debtId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus utang ini?')) return;
+            
+            debtsData = debtsData.filter(d => d.id !== debtId);
+            
+            // Simpan dan update tampilan
+            saveData();
+            updateDebtsDisplay();
+            renderDebtList();
+            
+            // Tampilkan notifikasi
+            showNotification('Utang berhasil dihapus!', 'success');
+        }
+        
+        // Render chart tabungan
+        function renderSavingsChart() {
+            if (savingsData.history.length === 0) {
+                savingsChartEl.innerHTML = '';
+                return;
+            }
+            
+            // Ambil 7 data terbaru
+            const recentHistory = [...savingsData.history]
+                .sort((a, b) => a.timestamp - b.timestamp)
+                .slice(-7);
+            
+            // Cari nilai maksimum untuk scaling
+            const maxAmount = Math.max(...recentHistory.map(item => item.amount), 1);
+            
+            let html = '';
+            recentHistory.forEach(item => {
+                const height = (item.amount / maxAmount) * 100;
+                html += `
+                    <div class="chart-bar" style="height: ${height}%;" title="${item.date}: ${formatRupiah(item.amount)}"></div>
+                `;
+            });
+            
+            savingsChartEl.innerHTML = html;
+        }
+        
+        // Render chart utang
+        function renderDebtChart() {
+            const pendingDebts = debtsData.filter(d => d.status === 'pending');
+            
+            if (pendingDebts.length === 0) {
+                debtChartEl.innerHTML = '';
+                return;
+            }
+            
+            // Cari nilai maksimum untuk scaling
+            const maxDebt = Math.max(...pendingDebts.map(debt => debt.remaining), 1);
+            
+            let html = '';
+            pendingDebts.slice(0, 5).forEach(debt => {
+                const height = (debt.remaining / maxDebt) * 100;
+                const shortName = debt.friend.length > 8 ? debt.friend.substring(0, 8) + '...' : debt.friend;
+                
+                html += `
+                    <div class="chart-bar debt" style="height: ${height}%;" title="${debt.friend}: ${formatRupiah(debt.remaining)}">
+                        <div style="position: absolute; bottom: -25px; font-size: 0.7rem; width: 100%; text-align: center;">${shortName}</div>
+                    </div>
+                `;
+            });
+            
+            debtChartEl.innerHTML = html;
+        }
+        
+        // Tampilkan notifikasi
+        function showNotification(message, type) {
+            // Buat elemen notifikasi
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Style notifikasi
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--primary-green)' : 'var(--primary-red)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: var(--radius-sm);
+                box-shadow: var(--shadow);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            // Tambahkan ke body
+            document.body.appendChild(notification);
+            
+            // Hapus notifikasi setelah 3 detik
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+            
+            // Tambahkan style animasi jika belum ada
+            if (!document.getElementById('notificationStyles')) {
+                const styleEl = document.createElement('style');
+                styleEl.id = 'notificationStyles';
+                styleEl.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(styleEl);
+            }
+        }
+        
+        // Simpan data ke localStorage
+        function saveData() {
+            localStorage.setItem('moneyTrack_savings', JSON.stringify(savingsData));
+            localStorage.setItem('moneyTrack_debts', JSON.stringify(debtsData));
+        }
+        
+        // Muat data dari localStorage
+        function loadData() {
+            const savedSavings = localStorage.getItem('moneyTrack_savings');
+            const savedDebts = localStorage.getItem('moneyTrack_debts');
+            
+            if (savedSavings) {
+                savingsData = JSON.parse(savedSavings);
+            }
+            
+            if (savedDebts) {
+                debtsData = JSON.parse(savedDebts);
+            }
+        }
+        
+        // Inisialisasi aplikasi
+        function initApp() {
+            // Muat data
+            loadData();
+            
+            // Update tampilan
+            updateSavingsDisplay();
+            updateDebtsDisplay();
+            renderDebtList();
+            
+            // Event listener untuk tombol close modal
+            closePayModalBtn.addEventListener('click', () => {
+                payDebtModal.style.display = 'none';
+            });
+            
+            // Tutup modal jika klik di luar
+            window.addEventListener('click', (e) => {
+                if (e.target === payDebtModal) {
+                    payDebtModal.style.display = 'none';
+                }
+            });
+            
+            // Auto-save ketika input berubah
+            savingsGoalInput.addEventListener('change', function() {
+                const value = parseInt(this.value) || 0;
+                if (value >= 0) {
+                    savingsData.goal = value;
+                    saveData();
+                    updateSavingsDisplay();
+                }
+            });
+            
+            dailySavingsInput.addEventListener('change', function() {
+                const value = parseInt(this.value) || 0;
+                if (value >= 0) {
+                    savingsData.daily = value;
+                    saveData();
+                    updateSavingsDisplay();
+                }
+            });
+            
+            // Tampilkan notifikasi selamat datang
+            setTimeout(() => {
+                if (!localStorage.getItem('moneyTrack_welcome')) {
+                    showNotification('Selamat datang di MoneyTrack! Mulai kelola tabungan dan utang Anda.', 'success');
+                    localStorage.setItem('moneyTrack_welcome', 'true');
+                }
+            }, 1000);
+        }
+        
+        // Jalankan aplikasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
