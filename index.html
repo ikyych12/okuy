@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyTrack Pro - Tabungan & Utang Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* VARIABLES & RESET */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --green-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --red-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --blue-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --purple-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            --gold-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --dark-bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+            --radius-2xl: 20px;
+            --radius-xl: 16px;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: white;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(103, 126, 234, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 30%);
+            padding: 20px;
+        }
+
+        /* MAIN CONTAINER */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-xl);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 4px solid white;
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .quick-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-badge {
+            flex: 1;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        /* MAIN CONTENT */
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* DASHBOARD CARDS */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            color: #1e293b;
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+        }
+
+        .savings-card::before {
+            background: var(--green-gradient);
+        }
+
+        .debt-card::before {
+            background: var(--red-gradient);
+        }
+
+        .days-card::before {
+            background: var(--blue-gradient);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .savings-card .card-icon {
+            background: var(--green-gradient);
+        }
+
+        .debt-card .card-icon {
+            background: var(--red-gradient);
+        }
+
+        .days-card .card-icon {
+            background: var(--blue-gradient);
+        }
+
+        .card-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .savings-card .card-value {
+            background: var(--green-gradient);
+            -webkit-background-clip: text;
+        }
+
+        .debt-card .card-value {
+            background: var(--red-gradient);
+            -webkit-background-clip: text;
+        }
+
+        .card-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        /* QUICK INPUT SECTION */
+        .quick-input-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: 35px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: #f59e0b;
+        }
+
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .amount-btn {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 25px 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .amount-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .amount-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .custom-input-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-xl);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .amount-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 18px 25px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .amount-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .input-helper {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .helper-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .helper-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .action-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .save-btn {
+            background: var(--green-gradient);
+            color: white;
+        }
+
+        .pay-btn {
+            background: var(--red-gradient);
+            color: white;
+        }
+
+        /* PROGRESS SECTION */
+        .progress-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: 35px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-xl);
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .progress-percent {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--green-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-bar {
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--green-gradient);
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.15) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.15) 50%,
+                rgba(255, 255, 255, 0.15) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 20px 20px;
+            animation: progressStripes 1s linear infinite;
+        }
+
+        @keyframes progressStripes {
+            from { background-position: 0 0; }
+            to { background-position: 20px 0; }
+        }
+
+        .progress-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        /* TRANSACTIONS */
+        .transactions-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: 35px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .transactions-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .transaction-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--glass-border);
+            transform: translateX(5px);
+        }
+
+        .transaction-type {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .transaction-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .savings-transaction .transaction-icon {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .debt-transaction .transaction-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .transaction-date {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .transaction-amount {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .savings-amount {
+            color: #10b981;
+        }
+
+        .debt-amount {
+            color: #ef4444;
+        }
+
+        /* ANIMATIONS */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        /* GLASS EFFECT */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="user-profile">
+                <div class="avatar floating">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-name">John Doe</div>
+                <div class="user-role">Financial Manager</div>
+            </div>
+
+            <div class="quick-stats">
+                <div class="stat-badge">
+                    <div class="stat-value" id="totalDays">0</div>
+                    <div class="stat-label">Hari Berjalan</div>
+                </div>
+                <div class="stat-badge">
+                    <div class="stat-value" id="totalTransactions">0</div>
+                    <div class="stat-label">Transaksi</div>
+                </div>
+            </div>
+
+            <div class="stat-badge">
+                <div class="stat-value" style="color: #10b981;">Rp <span id="dailyAverage">0</span></div>
+                <div class="stat-label">Rata-rata Harian</div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="content">
+            <!-- DASHBOARD CARDS -->
+            <div class="dashboard-cards">
+                <div class="dashboard-card savings-card">
+                    <div class="card-header">
+                        <div class="card-title">TOTAL TABUNGAN</div>
+                        <div class="card-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">Rp <span id="totalSavings">0</span></div>
+                    <div class="card-subtitle">Dari target <span id="savingsTarget">Rp 10.000.000</span></div>
+                </div>
+
+                <div class="dashboard-card debt-card">
+                    <div class="card-header">
+                        <div class="card-title">TOTAL UTANG</div>
+                        <div class="card-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="card-value">Rp <span id="totalDebt">0</span></div>
+                    <div class="card-subtitle"><span id="debtCount">0</span> utang belum lunas</div>
+                </div>
+
+                <div class="dashboard-card days-card">
+                    <div class="card-header">
+                        <div class="card-title">ESTIMASI TERCAPAI</div>
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                    <div class="card-value"><span id="daysLeft">-</span> <span style="font-size: 1.5rem;">hari</span></div>
+                    <div class="card-subtitle">Target tercapai dalam <span id="daysLeftText">- hari</span></div>
+                </div>
+            </div>
+
+            <!-- QUICK INPUT SECTION -->
+            <div class="quick-input-section">
+                <div class="section-title">
+                    <i class="fas fa-bolt"></i> Input Cepat Tabungan
+                </div>
+
+                <div class="quick-buttons">
+                    <button class="amount-btn" data-amount="15000">
+                        <div>15K</div>
+                        <div class="amount-label">Harian</div>
+                    </button>
+                    <button class="amount-btn" data-amount="50000">
+                        <div>50K</div>
+                        <div class="amount-label">Hemat</div>
+                    </button>
+                    <button class="amount-btn" data-amount="100000">
+                        <div>100K</div>
+                        <div class="amount-label">Bonus</div>
+                    </button>
+                    <button class="amount-btn" data-amount="200000">
+                        <div>200K</div>
+                        <div class="amount-label">Extra</div>
+                    </button>
+                </div>
+
+                <div class="custom-input-section">
+                    <div class="input-group">
+                        <input type="text" class="amount-input" id="customAmount" placeholder="Masukkan jumlah (contoh: 15k, 15000, 50rb)">
+                        <button class="action-btn save-btn" id="saveCustomBtn">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
+                    </div>
+                    <div class="input-helper">
+                        <button class="helper-btn" onclick="formatInput('15k')">15k</button>
+                        <button class="helper-btn" onclick="formatInput('50rb')">50rb</button>
+                        <button class="helper-btn" onclick="formatInput('100rb')">100rb</button>
+                        <button class="helper-btn" onclick="formatInput('200k')">200k</button>
+                        <button class="helper-btn" onclick="formatInput('500k')">500k</button>
+                        <button class="helper-btn" onclick="formatInput('1jt')">1jt</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn save-btn" id="addDebtBtn">
+                        <i class="fas fa-plus-circle"></i> Tambah Utang Baru
+                    </button>
+                    <button class="action-btn pay-btn" id="payDebtBtn">
+                        <i class="fas fa-money-check-alt"></i> Bayar Utang
+                    </button>
+                </div>
+            </div>
+
+            <!-- PROGRESS SECTION -->
+            <div class="progress-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i> Progress Tabungan
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <div class="progress-title">Menuju Target</div>
+                        <div class="progress-percent" id="progressPercent">0%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-info">
+                        <div class="info-box">
+                            <div class="info-value" id="currentSavings">Rp 0</div>
+                            <div class="info-label">Terkumpul</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-value" id="remainingAmount">Rp 10.000.000</div>
+                            <div class="info-label">Sisa Target</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-value" id="averageDaily">Rp 0</div>
+                            <div class="info-label">Rata-rata/hari</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRANSACTIONS SECTION -->
+            <div class="transactions-section">
+                <div class="section-title">
+                    <i class="fas fa-history"></i> Riwayat Transaksi
+                </div>
+                <div class="transactions-list" id="transactionsList">
+                    <!-- Transaksi akan ditampilkan di sini -->
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <i class="fas fa-wallet fa-3x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                        <div>Belum ada transaksi</div>
+                        <div style="font-size: 0.9rem; margin-top: 10px;">Mulai dengan menambahkan tabungan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEBT MODAL -->
+    <div id="debtModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: var(--dark-bg); border-radius: var(--radius-2xl); padding: 40px; max-width: 500px; width: 100%; border: 1px solid var(--glass-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div style="font-size: 1.5rem; font-weight: 700;">Tambah Utang Baru</div>
+                <button onclick="closeDebtModal()" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <div style="margin-bottom: 10px; color: #94a3b8;">Nama Teman</div>
+                <input type="text" id="debtFriendName" style="width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem;" placeholder="Nama teman">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <div style="margin-bottom: 10px; color: #94a3b8;">Jumlah Utang</div>
+                <input type="text" id="debtAmount" style="width: 100%; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 12px; color: white; font-size: 1rem;" placeholder="Contoh: 50k, 100rb, 500000">
+            </div>
+            
+            <button onclick="addDebt()" style="width: 100%; padding: 18px; background: var(--red-gradient); border: none; border-radius: 12px; color: white; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fas fa-plus-circle"></i> Tambah Utang
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data aplikasi
+        let savingsData = {
+            total: 0,
+            target: 10000000, // Target 10 juta
+            transactions: [],
+            dailyAverage: 0,
+            startDate: new Date().toISOString()
+        };
+        
+        let debtsData = [];
+        
+        // Format Rupiah
+        function formatRupiah(amount) {
+            return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+        
+        // Parse input dengan berbagai format (15k, 50rb, 100000, 1jt)
+        function parseAmount(input) {
+            if (!input) return 0;
+            
+            let str = input.toString().toLowerCase().replace(/\s/g, '');
+            
+            // Handle juta (jt)
+            if (str.includes('jt')) {
+                const num = parseFloat(str.replace('jt', '')) * 1000000;
+                return Math.round(num);
+            }
+            
+            // Handle ribu (k, rb)
+            if (str.includes('k')) {
+                const num = parseFloat(str.replace('k', '')) * 1000;
+                return Math.round(num);
+            }
+            
+            if (str.includes('rb')) {
+                const num = parseFloat(str.replace('rb', '')) * 1000;
+                return Math.round(num);
+            }
+            
+            // Jika hanya angka
+            const num = parseInt(str.replace(/[^\d]/g, ''));
+            return isNaN(num) ? 0 : num;
+        }
+        
+        // Format input untuk display
+        function formatInput(value) {
+            document.getElementById('customAmount').value = value;
+        }
+        
+        // Tambah tabungan
+        function addSavings(amount) {
+            if (amount <= 0) return;
+            
+            const transaction = {
+                id: Date.now(),
+                type: 'savings',
+                amount: amount,
+                date: new Date().toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                timestamp: Date.now()
+            };
+            
+            savingsData.total += amount;
+            savingsData.transactions.push(transaction);
+            
+            // Update UI
+            updateUI();
+            
+            // Simpan ke localStorage
+            saveData();
+            
+            // Tampilkan notifikasi
+            showNotification(`Berhasil menabung ${formatRupiah(amount)}!`, 'success');
+        }
+        
+        // Update UI
+        function updateUI() {
+            // Update total tabungan
+            document.getElementById('totalSavings').textContent = 
+                savingsData.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            // Update progress
+            const progress = Math.min(100, Math.round((savingsData.total / savingsData.target) * 100));
+            document.getElementById('progressPercent').textContent = `${progress}%`;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            
+            // Update info boxes
+            document.getElementById('currentSavings').textContent = formatRupiah(savingsData.total);
+            document.getElementById('remainingAmount').textContent = formatRupiah(Math.max(0, savingsData.target - savingsData.total));
+            
+            // Hitung rata-rata harian
+            const daysRunning = Math.max(1, Math.ceil((Date.now() - new Date(savingsData.startDate).getTime()) / (1000 * 60 * 60 * 24)));
+            const average = Math.round(savingsData.total / daysRunning);
+            savingsData.dailyAverage = average;
+            
+            document.getElementById('averageDaily').textContent = formatRupiah(average);
+            document.getElementById('dailyAverage').textContent = average.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            document.getElementById('totalDays').textContent = daysRunning;
+            
+            // Update estimasi hari
+            if (average > 0) {
+                const daysLeft = Math.ceil((savingsData.target - savingsData.total) / average);
+                document.getElementById('daysLeft').textContent = daysLeft;
+                document.getElementById('daysLeftText').textContent = `${daysLeft} hari`;
+            }
+            
+            // Update total transaksi
+            document.getElementById('totalTransactions').textContent = savingsData.transactions.length;
+            
+            // Update riwayat transaksi
+            updateTransactionsList();
+        }
+        
+        // Update riwayat transaksi
+        function updateTransactionsList() {
+            const container = document.getElementById('transactionsList');
+            
+            if (savingsData.transactions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <i class="fas fa-wallet fa-3x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                        <div>Belum ada transaksi</div>
+                        <div style="font-size: 0.9rem; margin-top: 10px;">Mulai dengan menambahkan tabungan</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Urutkan dari terbaru
+            const sortedTransactions = [...savingsData.transactions].sort((a, b) => b.timestamp - a.timestamp);
+            
+            let html = '';
+            sortedTransactions.slice(0, 10).forEach(transaction => {
+                html += `
+                    <div class="transaction-item savings-transaction">
+                        <div class="transaction-type">
+                            <div class="transaction-icon">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Tabungan</div>
+                                <div class="transaction-date">${transaction.date}</div>
+                            </div>
+                        </div>
+                        <div class="transaction-amount savings-amount">+ ${formatRupiah(transaction.amount)}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Debt modal functions
+        function showDebtModal() {
+            document.getElementById('debtModal').style.display = 'flex';
+        }
+        
+        function closeDebtModal() {
+            document.getElementById('debtModal').style.display = 'none';
+        }
+        
+        function addDebt() {
+            const friendName = document.getElementById('debtFriendName').value.trim();
+            const amountInput = document.getElementById('debtAmount').value.trim();
+            const amount = parseAmount(amountInput);
+            
+            if (!friendName || amount <= 0) {
+                showNotification('Harap isi nama teman dan jumlah utang dengan benar!', 'error');
+                return;
+            }
+            
+            const debt = {
+                id: Date.now(),
+                friend: friendName,
+                amount: amount,
+                remaining: amount,
+                status: 'pending',
+                date: new Date().toLocaleDateString('id-ID'),
+                timestamp: Date.now()
+            };
+            
+            debtsData.push(debt);
+            
+            // Reset form
+            document.getElementById('debtFriendName').value = '';
+            document.getElementById('debtAmount').value = '';
+            
+            // Close modal
+            closeDebtModal();
+            
+            // Update UI
+            updateDebtUI();
+            
+            // Save data
+            saveData();
+            
+            // Show notification
+            showNotification(`Utang kepada ${friendName} sebesar ${formatRupiah(amount)} berhasil ditambahkan!`, 'success');
+        }
+        
+        // Update debt UI
+        function updateDebtUI() {
+            const totalDebt = debtsData.reduce((sum, debt) => sum + debt.remaining, 0);
+            const pendingDebts = debtsData.filter(debt => debt.status === 'pending').length;
+            
+            document.getElementById('totalDebt').textContent = totalDebt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            document.getElementById('debtCount').textContent = pendingDebts;
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                background: ${type === 'success' ? 'var(--green-gradient)' : 'var(--red-gradient)'};
+                color: white;
+                padding: 20px 30px;
+                border-radius: 12px;
+                box-shadow: var(--shadow-lg);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 400px;
+                backdrop-filter: blur(10px);
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="font-size: 1.2rem;"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('moneytrack_pro_savings', JSON.stringify(savingsData));
+            localStorage.setItem('moneytrack_pro_debts', JSON.stringify(debtsData));
+        }
+        
+        // Load data from localStorage
+        function loadData() {
+            const savedSavings = localStorage.getItem('moneytrack_pro_savings');
+            const savedDebts = localStorage.getItem('moneytrack_pro_debts');
+            
+            if (savedSavings) {
+                savingsData = JSON.parse(savedSavings);
+            }
+            
+            if (savedDebts) {
+                debtsData = JSON.parse(savedDebts);
+            }
+        }
+        
+        // Initialize app
+        function initApp() {
+            // Load data
+            loadData();
+            
+            // Set up event listeners
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const amount = parseInt(this.getAttribute('data-amount'));
+                    addSavings(amount);
+                });
+            });
+            
+            // Custom amount save
+            document.getElementById('saveCustomBtn').addEventListener('click', function() {
+                const input = document.getElementById('customAmount').value;
+                const amount = parseAmount(input);
+                
+                if (amount > 0) {
+                    addSavings(amount);
+                    document.getElementById('customAmount').value = '';
+                } else {
+                    showNotification('Masukkan jumlah yang valid! (contoh: 15k, 50rb, 100000)', 'error');
+                }
+            });
+            
+            // Enter key for custom amount
+            document.getElementById('customAmount').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('saveCustomBtn').click();
+                }
+            });
+            
+            // Debt buttons
+            document.getElementById('addDebtBtn').addEventListener('click', showDebtModal);
+            
+            // Pay debt button
+            document.getElementById('payDebtBtn').addEventListener('click', function() {
+                showNotification('Fitur bayar utang akan segera hadir!', 'info');
+            });
+            
+            // Update UI
+            updateUI();
+            updateDebtUI();
+            
+            // Add CSS for animations
+            if (!document.getElementById('notificationStyles')) {
+                const style = document.createElement('style');
+                style.id = 'notificationStyles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Start app when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
